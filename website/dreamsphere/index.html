@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DreamSphere — Explore The Universe Inside Your Mind</title>
+  <meta name="description" content="A journey through neuroscience, psychology, culture, and the mysteries of human dreams." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Space Grotesk', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- React 18 & Babel Standalone UMD (Loads natively with file:// protocol!) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      background-color: #030712;
+      color: #f3f4f6;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #030712; }
+    ::-webkit-scrollbar-thumb { background: #3730a3; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Standalone React Application Script -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- DATASETS ---
+    const RESEARCH_TOPICS = [
+      {
+        id: 'neuroscience-rem',
+        title: 'Neurobiology of REM Sleep',
+        category: 'Neuroscience',
+        summary: 'How pontine-geniculate-occipital (PGO) waves trigger vivid sensory experiences during rapid eye movement.',
+        detail: 'During REM sleep, cholinergic neurons in the pons fire intensely, activating the visual cortex while muscle atonia prevents physical execution of dream actions. The prefrontal cortex shows decreased activation, accounting for the uncritical acceptance of surreal dream events.',
+        metrics: { brainwaveFreq: '15-30 Hz (Desynchronized)', primaryNeurotransmitter: 'Acetylcholine', activeRegions: 5 }
+      },
+      {
+        id: 'memory-consolidation',
+        title: 'Synaptic Pruning & Memory',
+        category: 'Cognitive Science',
+        summary: 'The two-stage model of memory transfer from hippocampal temporary storage to neocortical integration.',
+        detail: 'Slow-wave sleep consolidates declarative memories, while REM sleep rewires emotional associations and integrates novel experiences into pre-existing schema through synaptic downsizing.',
+        metrics: { brainwaveFreq: '0.5-4 Hz (Delta Waves)', primaryNeurotransmitter: 'GABA & Serotonin', activeRegions: 4 }
+      },
+      {
+        id: 'lucid-consciousness',
+        title: 'Lucid Dreaming & Metacognition',
+        category: 'Consciousness',
+        summary: 'Gamma-band 40Hz synchronization in the dorsolateral prefrontal cortex during self-reflective lucid states.',
+        detail: 'Lucid dreaming represents a hybrid state of consciousness where executive awareness awakens within an active REM sleep state, enabling volitional navigation of dream topographies.',
+        metrics: { brainwaveFreq: '40 Hz (Gamma Synchronization)', primaryNeurotransmitter: 'Dopamine & ACh', activeRegions: 6 }
+      },
+      {
+        id: 'threat-simulation',
+        title: 'Evolutionary Threat Simulation',
+        category: 'Psychology',
+        summary: 'Revonsuo\'s TST hypothesis positioning dreams as ancestral virtual reality threat rehearsal mechanisms.',
+        detail: 'Neurocognitive evidence demonstrates that dreams selectively overrepresent threat-perceiving emotions like anxiety and fear, allowing low-risk motor and cognitive rehearsal for survival.',
+        metrics: { brainwaveFreq: 'Theta 4-8 Hz', primaryNeurotransmitter: 'Norepinephrine', activeRegions: 4 }
+      }
+    ];
+
+    const LATEST_ARTICLES = [
+      {
+        id: 'bci-fmri-decoding',
+        title: 'Reconstructing Dream Visuals via fMRI Deep Neural Networks',
+        date: 'July 2026',
+        author: 'Dr. Elena Rostova',
+        journal: 'Nature Neuroscience',
+        image: 'https://images.unsplash.com/photo-1507499739999-097706ad8914?auto=format&fit=crop&w=800&q=80',
+        tags: ['BCI', 'AI', 'fMRI', 'Neuroimaging'],
+        snippet: 'Researchers at the Kyoto Neural Decoding Lab have achieved 84% accuracy in reconstructing coarse visual semantic categories from human subjects during hypnagogic sleep onset.'
+      },
+      {
+        id: 'sleep-paralysis-neurobiology',
+        title: 'The Hypnagogic Threshold: Sensorimotor Dissociation Explained',
+        date: 'June 2026',
+        author: 'Prof. Marcus Vance',
+        journal: 'Frontiers in Human Neuroscience',
+        image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+        tags: ['Sleep Paralysis', 'REM Atonia', 'Neurochemistry'],
+        snippet: 'Exploring how delayed GABAergic motor pathway inhibition interacts with hyperactive amygdalar threat detection during abrupt awakenings.'
+      },
+      {
+        id: 'cross-cultural-oneirocritics',
+        title: 'Universal Symbols vs. Cultural Schemas in Dreams',
+        date: 'May 2026',
+        author: 'Dr. Amara Singh',
+        journal: 'Journal of Cross-Cultural Psychology',
+        image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80',
+        tags: ['Anthropology', 'Jungian Archetypes', 'Mythology'],
+        snippet: 'A global comparative analysis of 12,000 dream narratives reveals striking archetype structural overlaps across isolated Indigenous and urban populations.'
+      }
+    ];
+
+    const SLEEP_STAGES = [
+      { stage: 'Wakefulness', short: 'WAKE', duration: '0-5%', brainwave: 'Alpha (8-12Hz) & Beta (13-30Hz)', description: 'High frequency, low amplitude brainwaves with active sensorimotor input.', eegType: 'beta' },
+      { stage: 'N1 (Light Sleep)', short: 'N1', duration: '5%', brainwave: 'Theta (4-7Hz)', description: 'Drowsiness transition stage. Hypnagogic jerks and floating sensations.', eegType: 'theta' },
+      { stage: 'N2 (Intermediate)', short: 'N2', duration: '45-55%', brainwave: 'Sleep Spindles (12-14Hz)', description: 'Body temp drops, heart rate slows. Spindles protect memory consolidation.', eegType: 'spindle' },
+      { stage: 'N3 (Deep Slow-Wave)', short: 'N3', duration: '15-25%', brainwave: 'Delta (0.5-3Hz)', description: 'Deepest restorative sleep. Growth hormone release and glymphatic brain clearance.', eegType: 'delta' },
+      { stage: 'REM (Vivid Dreaming)', short: 'REM', duration: '20-25%', brainwave: 'Sawtooth Theta / Desynchronized', description: 'Vivid narrative dreaming state. Muscle paralysis (atonia), rapid eye movement.', eegType: 'rem' }
+    ];
+
+    const BRAIN_REGIONS = [
+      { id: 'pfc', name: 'Prefrontal Cortex', status: 'Deactivated in REM / Active in Lucid', function: 'Logic, self-monitoring, working memory.', dreamImpact: 'Suppression during REM explains surrealism and lack of critical judgment in standard dreams.', coordinates: { x: 30, y: 35 }, color: '#8B5CF6' },
+      { id: 'amygdala', name: 'Amygdala & Limbic', status: 'Hyperactive during REM', function: 'Emotional processing, fear response, instinct.', dreamImpact: 'Generates intense emotional themes, threat scenarios, and vivid feeling tones.', coordinates: { x: 48, y: 55 }, color: '#EC4899' },
+      { id: 'hippocampus', name: 'Hippocampus', status: 'Synchronized with Neocortex', function: 'Episodic memory indexing and consolidation.', dreamImpact: 'Replays recent memories, recombining day residues into novel narrative metaphors.', coordinates: { x: 55, y: 60 }, color: '#06B6D4' },
+      { id: 'visual-cortex', name: 'Visual Association Cortex', status: 'Highly Active', function: 'Internal visual imagery synthesis.', dreamImpact: 'Fires internal visual signals despite closed eyes, creating hyper-realistic scenery.', coordinates: { x: 75, y: 50 }, color: '#3B82F6' },
+      { id: 'pons', name: 'Brainstem & Pontine Nuclei', status: 'Master REM Switch', function: 'Triggers REM sleep, PGO spikes, and motor inhibition.', dreamImpact: 'Blocks motor signals to spinal cord to prevent physical acting out of dream movements.', coordinates: { x: 50, y: 78 }, color: '#10B981' }
+    ];
+
+    const PSYCHOLOGY_THEORIES = [
+      { era: '1900', title: 'Freudian Psychoanalysis', thinker: 'Sigmund Freud', concept: 'Wish Fulfillment & Manifest vs. Latent Content', description: 'Dreams act as the "royal road to the unconscious", disguising repressed desires through manifest imagery to protect sleep.', quote: '"The interpretation of dreams is the royal road to a knowledge of the unconscious."', keyPoints: ['Manifest Content (surface story)', 'Latent Content (hidden wish)', 'Condensation & Displacement'] },
+      { era: '1916 - 1961', title: 'Analytical Psychology', thinker: 'Carl Gustav Jung', concept: 'Collective Unconscious & Archetypes', description: 'Dreams are natural self-representations of the psyche aimed at psychic balance (individuation) using primordial archetypes.', quote: '"Dreams are impartial, spontaneous products of the unconscious psyche."', keyPoints: ['Collective Unconscious', 'Archetypes (Shadow, Anima/Animus, Self)', 'Compensatory Function'] },
+      { era: '1977', title: 'Activation-Synthesis Model', thinker: 'Hobson & McCarley', concept: 'Neurobiological Signal Synthesis', description: 'Random cholinergic signals originating from the brainstem are synthesized by the cortex into coherent narratives.', quote: '"Dreaming is a synthesis of random neural noise."', keyPoints: ['PGO Spikes generate visual cues', 'Cortex acts as storyteller', 'No hidden code required'] },
+      { era: '2000 - Present', title: 'Threat Simulation Theory', thinker: 'Antti Revonsuo', concept: 'Evolutionary VR Threat Rehearsal', description: 'Dreams evolved as an immersive virtual reality training environment to rehearse threat detection and social survival.', quote: '"The dream production mechanism is an evolutionary threat rehearsal system."', keyPoints: ['Rehearsing danger safely', 'Enhancing social navigation', 'Predictive processing'] }
+    ];
+
+    const JUNG_ARCHETYPES = [
+      { name: 'The Shadow', symbol: '🌙', subtitle: 'The Unconscious Dark Twin', description: 'Represents hidden or disowned aspects of personality. In dreams, appears as a pursuer or dark antagonist.', integration: 'Facing and integrating the shadow unlocks untapped energy and self-acceptance.' },
+      { name: 'The Anima / Animus', symbol: '☯️', subtitle: 'The Inner Counter-Gender Soul', description: 'Guides the conscious ego toward intuition, emotional depth, and logic balance.', integration: 'Fosters spiritual connection, empathy, and harmonious relationships.' },
+      { name: 'The Persona', symbol: '🎭', subtitle: 'The Social Mask', description: 'The face presented to the world. Dreams of losing clothes or teeth reflect mask anxieties.', integration: 'Distinguishing true self-identity from external social roles.' },
+      { name: 'The Wise Old Man / Crone', symbol: '🧙‍♂️', subtitle: 'Archetype of Wisdom', description: 'Appears as a sage or guiding light offering profound intuitive insight during crises.', integration: 'Connects the individual to deep transpersonal wisdom.' },
+      { name: 'The Self', symbol: '🏵️', subtitle: 'Mandala of Wholeness', description: 'The supreme archetype of psychological unification. Symbolized by mandalas or luminous spheres.', integration: 'Achieving psychic wholeness and transcendent peace.' }
+    ];
+
+    const CULTURES_DATA = [
+      { id: 'egypt', name: 'Ancient Egypt', location: 'Thebes & Memphis', coords: { top: '38%', left: '56%' }, period: '2000 BCE', title: 'Divine Incubations & The Book of Dreams', summary: 'Egyptians believed dreams (Rwt) were divine messages accessed via specialized sleep incubation temples.', detail: 'The Chester Beatty Papyrus (1350 BCE) contains the world\'s oldest preserved dream interpretation manual, categorizing dreams into good omens (Horus) and bad omens (Seth).', artifact: 'Chester Beatty Papyrus', keyConcept: 'Mkt-Rwt (Divine Protection)' },
+      { id: 'greece', name: 'Ancient Greece', location: 'Epidaurus', coords: { top: '34%', left: '53%' }, period: '800 BCE', title: 'Asclepieion Temples & Oneirocritica', summary: 'Greeks sought medical healing in sacred sleep sanctuaries dedicated to Asclepius, God of Medicine.', detail: 'Sick pilgrims fasted and slept in temple dormitories. Artemidorus of Daldis later authored "Oneirocritica", a landmark 5-volume empirical dream study.', artifact: 'Votive Relief of Asclepius', keyConcept: 'Enkoimesis (Sacred Incubation)' },
+      { id: 'india', name: 'Vedic Traditions', location: 'Varanasi', coords: { top: '44%', left: '68%' }, period: '1500 BCE', title: 'Mandukya Upanishad & The Four States', summary: 'Vedic philosophy views dreaming (Svapna) as an intermediate realm between physical waking and deep dreamless awareness.', detail: 'The Mandukya Upanishad maps consciousness into four quarters: Jagrat (Waking), Svapna (Dreaming), Sushupti (Deep Sleep), and Turiya (Pure Transcendent Consciousness).', artifact: 'Sacred Turiya Mandala', keyConcept: 'Svapna-Sthan (Dream Realm)' },
+      { id: 'tibet', name: 'Tibetan Buddhism', location: 'Lhasa', coords: { top: '38%', left: '72%' }, period: '8th Century CE', title: 'Milam: The Art of Dream Yoga', summary: 'A Vajrayana practice designed to maintain lucidity during sleep to realize the illusory nature of all phenomena.', detail: 'Developed by Naropa, Dream Yoga trains practitioners to recognize dream states, transform dream forms, and experience primordial Clear Light awareness.', artifact: 'Naropa Thangka Painting', keyConcept: 'Milam (Dream Yoga)' },
+      { id: 'australia', name: 'Aboriginal Australia', location: 'Central Red Centre', coords: { top: '75%', left: '86%' }, period: '60,000+ Years Ago', title: 'Jukurrpa: The Eternal Dreamtime', summary: 'The Dreamtime is an eternal sacred continuum underpinning physical existence and songlines.', detail: 'Dreams serve as direct channels to communicate with ancestral spirits, discover new songlines, and maintain balance with the land.', artifact: 'Ancestral Songlines Dot Painting', keyConcept: 'Jukurrpa (Eternal Real)' },
+      { id: 'americas', name: 'Native American Ojibwe', location: 'Great Lakes', coords: { top: '32%', left: '22%' }, period: 'Ancient Traditions', title: 'Vision Quests & Asabikeshiinh', summary: 'Dreams are essential guides for life decisions, guardian connections, and medicine work.', detail: 'Youth engaged in Vision Quests in nature to receive their sacred dream song. The Ojibwe spider woman legend birthed the dreamcatcher (Bwaajige Nagwaagan).', artifact: 'Handcrafted Ojibwe Dreamcatcher', keyConcept: 'Bwaajige (Sacred Dream Seeking)' }
+    ];
+
+    const EXPERIENCE_TYPES = [
+      { id: 'lucid', title: 'Lucid Dreaming', badge: 'Conscious Awareness', tagline: 'Awakening inside the simulation of your mind.', description: 'The state where the dreamer becomes fully aware they are dreaming while remaining inside the dream environment. Grants power to control dream physics, fly, and interact with subconscious archetypes.', color: 'from-cyan-500 to-blue-600', techniques: [{ name: 'MILD (Mnemonic Induction)', desc: 'Repeat intent: "Next time I dream, I will remember I am dreaming."' }, { name: 'WILD (Wake-Initiated)', desc: 'Transition directly from waking consciousness into a dream.' }, { name: 'Reality Checks', desc: 'Perform habit tests (read text twice, count fingers) throughout the day.' }] },
+      { id: 'nightmares', title: 'Nightmares & Threat Rehearsal', badge: 'Emotional Surge', tagline: 'High-intensity hyper-arousal during REM sleep.', description: 'Distressing dream experiences triggering fear responses and racing heart. Modern science views nightmares as over-activated threat rehearsal or incomplete emotional processing.', color: 'from-rose-500 to-purple-900', techniques: [{ name: 'Imagery Rehearsal Therapy (IRT)', desc: 'Rewrite nightmare endings during waking hours and mentally rehearse the empowered version.' }, { name: 'Desensitization Protocol', desc: 'Gradually confront nightmare symbols with relaxed breathing.' }] },
+      { id: 'recurring', title: 'Recurring Dreams', badge: 'Subconscious Loops', tagline: 'The mind repeating an unexamined psychological message.', description: 'Dreams featuring identical storylines repeated over months or years. Typically signal unresolved internal conflicts or core emotional dilemmas requiring conscious integration.', color: 'from-amber-500 to-purple-600', techniques: [{ name: 'Pattern Recognition Journaling', desc: 'Document recurring symbols and trace back emotional triggers.' }, { name: 'Active Imagination (Jungian)', desc: 'Re-enter dream scenarios while awake to converse directly with dream figures.' }] },
+      { id: 'paralysis', title: 'Sleep Paralysis', badge: 'Threshold Phenomena', tagline: 'Trapped between waking mind and REM motor paralysis.', description: 'Consciousness wakes up, but REM muscle atonia remains active. Often accompanied by hypnagogic auditory hallucinations and chest pressure.', color: 'from-indigo-900 to-violet-950', techniques: [{ name: 'Wiggle Focus Technique', desc: 'Focus all attention on moving a single tiny muscle (like the big toe).' }, { name: 'Calm Reassurance Protocol', desc: 'Remind yourself: "My brain is just in REM atonia. This will pass in 30 seconds."' }] }
+    ];
+
+    const REFERENCE_PAPERS = [
+      { id: 1, title: 'Neural decoding of visual imagery during sleep', authors: 'Horikawa, T., Tamaki, M., Miyawaki, Y., & Kamitani, Y.', journal: 'Science', year: 2013, vol: '340(6132)', doi: '10.1126/science.1234330', field: 'Neuroscience & BCI', abstract: 'Demonstrated that visual contents during sleep onset can be decoded using pattern recognition over fMRI activity in human visual cortex.' },
+      { id: 2, title: 'The functions of dream sleep: Memory consolidation and emotional regulation', authors: 'Walker, M. P., & van der Helm, E.', journal: 'Psychological Bulletin', year: 2009, vol: '135(5)', doi: '10.1037/a0016570', field: 'Cognitive Neuroscience', abstract: 'Synthesizes empirical evidence demonstrating how REM sleep processes emotional experiences and selectively consolidates associative memories.' },
+      { id: 3, title: 'Lucid dreaming: Physiological correlates of consciousness during sleep', authors: 'Voss, U., Holzmann, R., Tuin, I., & Hobson, J. A.', journal: 'Sleep', year: 2009, vol: '32(9)', doi: '10.1093/sleep/32.9.1191', field: 'Consciousness Studies', abstract: 'Identified 40Hz EEG gamma band power surges in frontopolar regions during volitional lucid dreaming states.' },
+      { id: 4, title: 'The Threat Simulation Theory of dreaming: Empirical status and future directions', authors: 'Revonsuo, A., Tuominen, J., & Valli, K.', journal: 'Behavioral and Brain Sciences', year: 2015, vol: '38', doi: '10.1017/S0140525X1500003X', field: 'Evolutionary Psychology', abstract: 'Evaluates neurocognitive evidence for dreams as evolved virtual reality threat rehearsal simulations.' }
+    ];
+
+    // --- COMPONENTS ---
+
+    // 1. 3D Solar System & Starfield Canvas
+    function CosmicCanvas() {
+      const canvasRef = useRef(null);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animId;
+
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        const handleResize = () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', handleResize);
+
+        let mouse = { x: width / 2, y: height / 2, targetX: width / 2, targetY: height / 2 };
+        const handleMouseMove = (e) => {
+          mouse.targetX = e.clientX;
+          mouse.targetY = e.clientY;
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+
+        const stars = Array.from({ length: 800 }, () => ({
+          x: (Math.random() - 0.5) * width * 2,
+          y: (Math.random() - 0.5) * height * 2,
+          z: Math.random() * width,
+          size: Math.random() * 1.5 + 0.5,
+          alpha: Math.random(),
+          pulseSpeed: 0.005 + Math.random() * 0.015,
+          color: ['#ffffff', '#a5b4fc', '#c084fc', '#67e8f9', '#f472b6'][Math.floor(Math.random() * 5)]
+        }));
+
+        const planets = [
+          { radius: 4, distance: 70, speed: 0.025, color: '#a1a1aa', angle: Math.random() * Math.PI * 2 },
+          { radius: 7, distance: 110, speed: 0.018, color: '#fde047', angle: Math.random() * Math.PI * 2 },
+          { radius: 8, distance: 160, speed: 0.012, color: '#38bdf8', hasMoon: true, angle: Math.random() * Math.PI * 2 },
+          { radius: 6, distance: 210, speed: 0.009, color: '#f87171', angle: Math.random() * Math.PI * 2 },
+          { radius: 10, distance: 260, speed: 0.007, color: '#c084fc', glow: true, angle: Math.random() * Math.PI * 2 },
+          { radius: 16, distance: 330, speed: 0.005, color: '#fb923c', angle: Math.random() * Math.PI * 2 },
+          { radius: 14, distance: 410, speed: 0.003, color: '#fef08a', hasRings: true, angle: Math.random() * Math.PI * 2 },
+          { radius: 10, distance: 480, speed: 0.002, color: '#22d3ee', angle: Math.random() * Math.PI * 2 }
+        ];
+
+        let angleGlobal = 0;
+
+        const render = () => {
+          mouse.x += (mouse.targetX - mouse.x) * 0.05;
+          mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+          const mouseOffset = {
+            x: (mouse.x - width / 2) * 0.08,
+            y: (mouse.y - height / 2) * 0.08
+          };
+
+          ctx.clearRect(0, 0, width, height);
+
+          const bgGrad = ctx.createRadialGradient(width / 2, height / 2, 50, width / 2, height / 2, width * 0.8);
+          bgGrad.addColorStop(0, '#090d16');
+          bgGrad.addColorStop(0.5, '#030712');
+          bgGrad.addColorStop(1, '#02040a');
+          ctx.fillStyle = bgGrad;
+          ctx.fillRect(0, 0, width, height);
+
+          // Stars
+          stars.forEach((star) => {
+            star.z -= 0.2;
+            if (star.z <= 0) star.z = width;
+
+            const k = 300 / star.z;
+            const px = star.x * k + width / 2 + mouseOffset.x * (1 - star.z / width);
+            const py = star.y * k + height / 2 + mouseOffset.y * (1 - star.z / width);
+
+            if (px >= 0 && px <= width && py >= 0 && py <= height) {
+              star.alpha += star.pulseSpeed;
+              const currentAlpha = Math.abs(Math.sin(star.alpha));
+              const size = Math.max(0.5, star.size * k * 0.5);
+
+              ctx.fillStyle = star.color;
+              ctx.globalAlpha = currentAlpha * 0.8;
+              ctx.beginPath();
+              ctx.arc(px, py, size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
+          ctx.globalAlpha = 1.0;
+
+          // Solar System Center
+          const sunX = width / 2 + mouseOffset.x;
+          const sunY = height / 2 + mouseOffset.y;
+
+          // Orbit Lines
+          planets.forEach((p) => {
+            ctx.beginPath();
+            ctx.ellipse(sunX, sunY, p.distance, p.distance * 0.4, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          });
+
+          // Sun Core Glow
+          const sunGlow = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 70);
+          sunGlow.addColorStop(0, '#ffffff');
+          sunGlow.addColorStop(0.3, '#fef08a');
+          sunGlow.addColorStop(0.6, 'rgba(168, 85, 247, 0.4)');
+          sunGlow.addColorStop(1, 'rgba(0,0,0,0)');
+
+          ctx.fillStyle = sunGlow;
+          ctx.beginPath();
+          ctx.arc(sunX, sunY, 70, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(sunX, sunY, 16, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Planets
+          angleGlobal += 0.005;
+          planets.forEach((p) => {
+            p.angle += p.speed;
+            const px = sunX + Math.cos(p.angle) * p.distance;
+            const py = sunY + Math.sin(p.angle) * p.distance * 0.4;
+
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(px, py, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (p.hasRings) {
+              ctx.beginPath();
+              ctx.ellipse(px, py, p.radius * 2.2, p.radius * 0.7, 0.3, 0, Math.PI * 2);
+              ctx.strokeStyle = 'rgba(254, 240, 138, 0.6)';
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            }
+          });
+
+          animId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+          cancelAnimationFrame(animId);
+          window.removeEventListener('resize', handleResize);
+          window.removeEventListener('mousemove', handleMouseMove);
+        };
+      }, []);
+
+      return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.95 }} />;
+    }
+
+    // 2. Navbar
+    function Navbar({ activeTab, setActiveTab, onOpenAIInterpreter }) {
+      const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+      const [audioCtx, setAudioCtx] = useState(null);
+
+      const navItems = [
+        { id: 'home', label: 'Home', icon: '✨' },
+        { id: 'science', label: 'Science of Dreams', icon: '🧠' },
+        { id: 'psychology', label: 'Psychology', icon: '🔮' },
+        { id: 'culture', label: 'Cultures', icon: '🌍' },
+        { id: 'experiences', label: 'Dream Experiences', icon: '🌌' },
+        { id: 'ai-future', label: 'AI & Future', icon: '🤖' },
+        { id: 'references', label: 'References', icon: '📚' }
+      ];
+
+      const toggleAudio = () => {
+        if (isPlayingAudio) {
+          if (audioCtx) audioCtx.close();
+          setAudioCtx(null);
+          setIsPlayingAudio(false);
+        } else {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const master = ctx.createGain();
+          master.gain.setValueAtTime(0.1, ctx.currentTime);
+          master.connect(ctx.destination);
+
+          [108, 216, 432].forEach((freq) => {
+            const osc = ctx.createOscillator();
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            osc.connect(master);
+            osc.start();
+          });
+          setAudioCtx(ctx);
+          setIsPlayingAudio(true);
+        }
+      };
+
+      return (
+        <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-purple-500/20 py-3 shadow-2xl">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <button onClick={() => setActiveTab('home')} className="flex items-center gap-3 text-left focus:outline-none">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-0.5 shadow-lg shadow-purple-500/30">
+                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                  <span className="text-xl">🪐</span>
+                </div>
+              </div>
+              <div>
+                <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-purple-400">
+                  Dream<span className="text-purple-400 font-light">Sphere</span>
+                </span>
+                <span className="block text-[10px] font-mono tracking-widest text-indigo-300/70 uppercase">
+                  Consciousness & Cosmos
+                </span>
+              </div>
+            </button>
+
+            <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-full border border-white/10 backdrop-blur-md">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-1.5 ${
+                    activeTab === item.id
+                      ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 font-semibold scale-105'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleAudio}
+                className={`px-3 py-2 rounded-full text-xs font-mono border transition-all ${
+                  isPlayingAudio ? 'bg-purple-500/20 border-purple-400 text-purple-200 animate-pulse' : 'bg-slate-900 border-white/10 text-slate-400'
+                }`}
+              >
+                <span>{isPlayingAudio ? '🔊 Cosmic Sound ON' : '🔇 Ambient Sound'}</span>
+              </button>
+
+              <button
+                onClick={onOpenAIInterpreter}
+                className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 text-white border border-cyan-400/30 shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all"
+              >
+                <span>✨ Launch AI Interpreter</span>
+              </button>
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    // 3. Sleep Cycle Live EEG Visualizer
+    function SleepCycleVisualizer() {
+      const [stageIdx, setStageIdx] = useState(4);
+      const canvasRef = useRef(null);
+      const stage = SLEEP_STAGES[stageIdx];
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animId, offset = 0;
+
+        const renderEEG = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.beginPath();
+          ctx.strokeStyle = stageIdx === 4 ? '#f43f5e' : stageIdx === 3 ? '#a855f7' : '#06b6d4';
+          ctx.lineWidth = 2.5;
+
+          offset += 0.08;
+          for (let x = 0; x < canvas.width; x++) {
+            let y = canvas.height / 2;
+            if (stage.eegType === 'beta') y += Math.sin(x * 0.2 + offset * 5) * 12;
+            else if (stage.eegType === 'theta') y += Math.sin(x * 0.08 + offset * 2) * 25;
+            else if (stage.eegType === 'spindle') y += Math.sin(x * 0.3 + offset * 4) * (x % 200 < 60 ? 30 : 8);
+            else if (stage.eegType === 'delta') y += Math.sin(x * 0.03 + offset) * 45;
+            else if (stage.eegType === 'rem') y += Math.sin(x * 0.18 + offset * 4) * 20 + (Math.random() > 0.95 ? 25 : 0);
+
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          animId = requestAnimationFrame(renderEEG);
+        };
+        renderEEG();
+        return () => cancelAnimationFrame(animId);
+      }, [stageIdx, stage]);
+
+      return (
+        <div className="bg-slate-900/60 border border-purple-500/20 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+          <div className="flex justify-between items-center border-b border-white/10 pb-4">
+            <div>
+              <span className="text-xs font-mono text-purple-400">⚡ Live EEG Waveform Simulator</span>
+              <h3 className="text-2xl font-bold text-white">8-Hour Sleep Architecture</h3>
+            </div>
+            <span className="text-xs font-mono text-cyan-400 font-bold">{stage.brainwave}</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            {SLEEP_STAGES.map((s, idx) => (
+              <button
+                key={s.stage}
+                onClick={() => setStageIdx(idx)}
+                className={`p-3 rounded-2xl border text-left transition-all ${
+                  stageIdx === idx ? 'bg-purple-900/80 border-purple-400 text-white font-bold' : 'bg-slate-950 border-white/5 text-slate-400'
+                }`}
+              >
+                <span className="text-xs font-mono text-purple-400 block">{s.short}</span>
+                <span className="text-sm block">{s.stage.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-slate-950 p-4 rounded-2xl border border-purple-500/30">
+            <canvas ref={canvasRef} width={700} height={90} className="w-full h-24 bg-slate-950 rounded-lg" />
+          </div>
+
+          <div className="bg-slate-950 p-5 rounded-2xl border border-white/10 text-xs leading-relaxed text-slate-300">
+            <strong className="text-white font-bold block mb-1">{stage.stage} — Profile:</strong>
+            {stage.description}
+          </div>
+        </div>
+      );
+    }
+
+    // 4. Brain Topography Diagram
+    function BrainHeatmap() {
+      const [selectedRegion, setSelectedRegion] = useState(BRAIN_REGIONS[0]);
+
+      return (
+        <div className="bg-slate-900/60 border border-purple-500/20 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <span className="text-xs font-mono text-cyan-400">🧬 Neuroanatomy Interactive Topography</span>
+            <h3 className="text-2xl font-bold text-white">Neural Region Activation in Dreams</h3>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 relative bg-slate-950 rounded-3xl border border-purple-500/30 p-6 min-h-[320px] flex items-center justify-center">
+              <svg className="w-full max-w-sm h-auto opacity-30 fill-purple-900/40 stroke-purple-500" viewBox="0 0 100 100">
+                <path d="M 25 40 C 20 25, 40 15, 60 15 C 75 15, 88 25, 85 45 C 85 55, 75 65, 68 70 C 62 75, 50 85, 45 85 C 40 85, 38 75, 30 72 Z" />
+              </svg>
+
+              {BRAIN_REGIONS.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => setSelectedRegion(r)}
+                  style={{ top: `${r.coordinates.y}%`, left: `${r.coordinates.x}%` }}
+                  className="absolute transform -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+                >
+                  <div className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center shadow-lg" style={{ backgroundColor: r.color }}>
+                    <span className="text-[10px] font-bold text-slate-950 font-mono">{r.name[0]}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="lg:col-span-5 bg-slate-950 p-6 rounded-3xl border border-white/10 space-y-4">
+              <span className="text-xs font-mono text-purple-400 font-bold block">Selected Region</span>
+              <h4 className="text-xl font-bold text-white" style={{ color: selectedRegion.color }}>{selectedRegion.name}</h4>
+              <p className="text-xs text-slate-300 leading-relaxed bg-purple-950/30 p-3.5 rounded-2xl border border-purple-500/20">
+                {selectedRegion.dreamImpact}
+              </p>
+              <div className="text-xs font-mono text-slate-400">
+                Status: <span className="text-cyan-300">{selectedRegion.status}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 5. Culture Map Component
+    function CultureMap() {
+      const [activeCulture, setActiveCulture] = useState(CULTURES_DATA[0]);
+
+      return (
+        <div className="bg-slate-900/60 border border-purple-500/20 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <span className="text-xs font-mono text-amber-400">🌍 Global Anthropological Atlas</span>
+            <h3 className="text-2xl font-bold text-white">Oneirocritica Across Civilizations</h3>
+          </div>
+
+          <div className="relative w-full bg-slate-950 rounded-3xl border border-purple-500/30 p-6 min-h-[340px] flex items-center justify-center overflow-hidden">
+            <svg className="w-full h-auto opacity-20 fill-purple-700 stroke-purple-400 stroke-[0.5]" viewBox="0 0 1000 500">
+              <path d="M150,120 Q200,80 300,100 T250,220 Z" />
+              <path d="M480,80 Q560,70 600,140 Z" />
+              <path d="M480,190 Q580,200 560,350 Z" />
+              <path d="M600,80 Q850,60 880,220 Z" />
+              <path d="M800,320 Q900,310 880,420 Z" />
+            </svg>
+
+            {CULTURES_DATA.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveCulture(item)}
+                style={{ top: item.coords.top, left: item.coords.left }}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+              >
+                <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold border transition-all ${
+                  activeCulture.id === item.id ? 'bg-amber-500 text-slate-950 border-amber-300 scale-110 shadow-lg' : 'bg-slate-950 text-amber-300 border-amber-500/40'
+                }`}>
+                  📍 {item.name}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-slate-950 border border-amber-500/30 rounded-3xl p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3">
+              <div>
+                <span className="text-xs font-mono text-amber-400">{activeCulture.period} • {activeCulture.location}</span>
+                <h4 className="text-xl font-extrabold text-white">{activeCulture.title}</h4>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-mono">{activeCulture.keyConcept}</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-2xl border border-white/5">
+              {activeCulture.detail}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // 6. AI Dream Interpreter Studio Component
+    function AIDreamInterpreter() {
+      const [dreamText, setDreamText] = useState('I was floating over an ancient obsidian city inside a spiral purple galaxy...');
+      const [isProcessing, setIsProcessing] = useState(false);
+      const [result, setResult] = useState(null);
+
+      const handleInterpret = () => {
+        if (!dreamText.trim()) return;
+        setIsProcessing(true);
+        setResult(null);
+
+        setTimeout(() => {
+          setResult({
+            archetype: 'The Self & Cosmic Wholeness Archetype',
+            eegSync: '38.4 Hz (Gamma Synchronization)',
+            interpretation: 'Your dream log indicates a high-level transcendental narrative. Floating over ancient topographies signifies ego expansion, while obsidian geometry represents unshakeable core subconscious memories being restructured.',
+            keySymbols: ['Spiral Galaxy (Wholeness)', 'Obsidian City (Deep Memory)', 'Cosmic Flight (Executive Autonomy)']
+          });
+          setIsProcessing(false);
+        }, 1500);
+      };
+
+      return (
+        <div className="bg-slate-900/70 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <span className="text-xs font-mono text-cyan-400">🤖 Neural AI Studio</span>
+            <h3 className="text-2xl font-bold text-white">AI Subconscious Neural Decoder</h3>
+          </div>
+
+          <textarea
+            rows={3}
+            value={dreamText}
+            onChange={(e) => setDreamText(e.target.value)}
+            className="w-full p-4 rounded-2xl bg-slate-950 border border-purple-500/30 text-slate-200 text-sm focus:outline-none focus:border-cyan-400"
+          />
+
+          <button
+            onClick={handleInterpret}
+            disabled={isProcessing}
+            className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 text-white shadow-xl hover:scale-[1.01] transition-all"
+          >
+            {isProcessing ? 'Analyzing Subconscious Signatures...' : '✨ Execute Neural AI Interpretation'}
+          </button>
+
+          {result && (
+            <div className="bg-slate-950 border border-cyan-400/40 rounded-3xl p-6 space-y-4">
+              <span className="text-xs font-mono text-cyan-400 font-bold block">Analysis Report: {result.archetype}</span>
+              <p className="text-xs text-slate-200 leading-relaxed bg-purple-950/30 p-4 rounded-2xl border border-purple-500/20">
+                {result.interpretation}
+              </p>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {result.keySymbols.map((sym, idx) => (
+                  <span key={idx} className="px-3 py-1 rounded-xl bg-slate-900 border border-white/10 text-xs font-mono text-slate-300">
+                    🏷️ {sym}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // 7. Lucid Reality Check Trainer Component
+    function LucidGuide() {
+      const [clockText, setClockText] = useState('03:44 AM');
+      const [checksCount, setChecksCount] = useState(0);
+
+      const testClock = () => {
+        setChecksCount(prev => prev + 1);
+        const times = ['03:44 AM', '99:12 ?', '∞:00 AM', '12:88 !!'];
+        setClockText(times[Math.floor(Math.random() * times.length)]);
+      };
+
+      return (
+        <div className="bg-slate-900/60 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <span className="text-xs font-mono text-cyan-400">🌌 Metacognitive Trainer</span>
+            <h3 className="text-2xl font-bold text-white">Digital Reality Check Test</h3>
+          </div>
+
+          <div onClick={testClock} className="cursor-pointer bg-slate-950 border-2 border-cyan-500/40 rounded-2xl p-6 text-center space-y-2 hover:border-cyan-400 transition-all">
+            <span className="text-xs font-mono text-slate-400 block">Tap to Test Digital Clock Stability</span>
+            <div className="text-4xl font-mono font-extrabold text-cyan-400">{clockText}</div>
+            {clockText.includes('?') || clockText.includes('∞') || clockText.includes('!') ? (
+              <span className="text-xs font-mono text-rose-400 font-bold block">⚠️ INSTABILITY DETECTED! YOU ARE DREAMING!</span>
+            ) : (
+              <span className="text-xs font-mono text-emerald-400 block">✓ Stable Text (Waking State)</span>
+            )}
+          </div>
+
+          <div className="flex justify-between text-xs font-mono text-slate-400">
+            <span>Reality Checks Today:</span>
+            <span className="text-cyan-400 font-bold">{checksCount}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // --- MAIN APP SHELL ---
+    function App() {
+      const [activeTab, setActiveTab] = useState('home');
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 relative">
+          <CosmicCanvas />
+          <Navbar activeTab={activeTab} setActiveTab={setActiveTab} onOpenAIInterpreter={() => setActiveTab('ai-future')} />
+
+          <main className="relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            
+            {/* HOME PAGE */}
+            {activeTab === 'home' && (
+              <div className="space-y-20 pt-8 text-center">
+                <div className="space-y-6 max-w-4xl mx-auto">
+                  <span className="px-4 py-2 rounded-full bg-slate-900 border border-purple-500/30 text-purple-300 text-xs font-mono">
+                    NASA & Cognitive Science Research Platform
+                  </span>
+                  <h1 className="text-5xl sm:text-7xl font-extrabold text-white tracking-tight leading-none">
+                    Explore The Universe <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-500">
+                      Inside Your Mind
+                    </span>
+                  </h1>
+                  <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+                    A journey through neuroscience, psychology, culture, and the mysteries of human dreams.
+                  </p>
+
+                  <div className="flex flex-wrap justify-center gap-4 pt-4">
+                    <button onClick={() => setActiveTab('science')} className="px-8 py-4 rounded-full font-bold text-sm bg-gradient-to-r from-indigo-600 to-pink-600 text-white shadow-xl hover:scale-105 transition-all">
+                      🧠 Begin Research Journey
+                    </button>
+                    <button onClick={() => setActiveTab('ai-future')} className="px-8 py-4 rounded-full font-bold text-sm bg-slate-900 text-cyan-300 border border-cyan-400/40 hover:scale-105 transition-all">
+                      ✨ Launch AI Interpreter
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
+                  {RESEARCH_TOPICS.map((topic) => (
+                    <div key={topic.id} onClick={() => setActiveTab('science')} className="cursor-pointer bg-slate-900/60 border border-white/10 p-6 rounded-3xl backdrop-blur-xl hover:border-purple-400 transition-all">
+                      <span className="text-xs font-mono text-purple-400 block mb-2">{topic.category}</span>
+                      <h3 className="text-base font-bold text-white mb-2">{topic.title}</h3>
+                      <p className="text-xs text-slate-400 leading-relaxed">{topic.summary}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* SCIENCE PAGE */}
+            {activeTab === 'science' && (
+              <div className="space-y-12">
+                <div className="text-center max-w-2xl mx-auto space-y-3">
+                  <h1 className="text-4xl font-extrabold text-white">The Science of Dreams</h1>
+                  <p className="text-xs text-slate-300">Neurobiological mechanisms of sleep architecture, brainwave synchronization, and memory consolidation.</p>
+                </div>
+                <SleepCycleVisualizer />
+                <BrainHeatmap />
+              </div>
+            )}
+
+            {/* PSYCHOLOGY PAGE */}
+            {activeTab === 'psychology' && (
+              <div className="space-y-12">
+                <div className="text-center max-w-2xl mx-auto space-y-3">
+                  <h1 className="text-4xl font-extrabold text-white">Psychology of Dreams</h1>
+                  <p className="text-xs text-slate-300">Freudian psychoanalysis, Jungian collective archetypes, and threat simulation theory.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                  {JUNG_ARCHETYPES.map((arch) => (
+                    <div key={arch.name} className="bg-slate-900/60 border border-purple-500/20 p-5 rounded-3xl space-y-2 text-center">
+                      <span className="text-3xl block">{arch.symbol}</span>
+                      <h4 className="text-base font-bold text-white">{arch.name}</h4>
+                      <p className="text-[11px] text-slate-400 leading-relaxed">{arch.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* CULTURES PAGE */}
+            {activeTab === 'culture' && (
+              <div className="space-y-12">
+                <CultureMap />
+              </div>
+            )}
+
+            {/* EXPERIENCES PAGE */}
+            {activeTab === 'experiences' && (
+              <div className="space-y-12">
+                <LucidGuide />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {EXPERIENCE_TYPES.map((exp) => (
+                    <div key={exp.id} className="bg-slate-900/60 border border-white/10 p-6 rounded-3xl space-y-3">
+                      <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-mono">{exp.badge}</span>
+                      <h3 className="text-xl font-bold text-white">{exp.title}</h3>
+                      <p className="text-xs text-slate-300 leading-relaxed">{exp.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* AI & FUTURE PAGE */}
+            {activeTab === 'ai-future' && (
+              <div className="space-y-12">
+                <AIDreamInterpreter />
+              </div>
+            )}
+
+            {/* REFERENCES PAGE */}
+            {activeTab === 'references' && (
+              <div className="space-y-6">
+                <h1 className="text-3xl font-extrabold text-white text-center">Scientific Library & Citation Index</h1>
+                <div className="space-y-4">
+                  {REFERENCE_PAPERS.map((paper) => (
+                    <div key={paper.id} className="bg-slate-900/60 border border-white/10 p-6 rounded-3xl space-y-2">
+                      <span className="text-xs font-mono text-purple-400">{paper.field} • {paper.journal} ({paper.year})</span>
+                      <h3 className="text-lg font-bold text-white">{paper.title}</h3>
+                      <p className="text-xs text-slate-300 leading-relaxed">{paper.abstract}</p>
+                      <span className="text-[11px] font-mono text-cyan-300 block">DOI: {paper.doi}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </main>
+
+          <footer className="border-t border-purple-500/20 py-12 text-center text-xs font-mono text-slate-500">
+            © 2026 DreamSphere Research Collective. All rights reserved.
+          </footer>
+        </div>
+      );
+    }
+
+    // Render Mount
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
