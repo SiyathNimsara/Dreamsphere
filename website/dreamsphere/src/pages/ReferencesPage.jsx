@@ -1,9 +1,14 @@
-import React, { useState } from 'https://esm.sh/react@18';
-import { REFERENCE_PAPERS } from '../data/dreamData.js';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { REFERENCE_PAPERS } from '../data/referencesData';
+import Card from '../components/common/Card';
+import ResearchModal from '../components/common/ResearchModal';
+import { Search, BookOpen } from 'lucide-react';
 
-export default function ReferencesPage({ onSelectPaper }) {
+export default function ReferencesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedField, setSelectedField] = useState('All');
+  const [selectedPaper, setSelectedPaper] = useState(null);
 
   const fields = ['All', 'Neuroscience & BCI', 'Cognitive Neuroscience', 'Consciousness Studies', 'Evolutionary Psychology', 'Anthropology & Psychology'];
 
@@ -16,12 +21,16 @@ export default function ReferencesPage({ onSelectPaper }) {
   });
 
   return (
-    <div className="space-y-12 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      {/* Header */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-12 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-mono">
-          <span>📚</span>
+          <BookOpen className="w-3.5 h-3.5" />
           <span>Academic Database & Citation Index</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">
@@ -33,10 +42,8 @@ export default function ReferencesPage({ onSelectPaper }) {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-slate-900/60 border border-purple-500/20 rounded-3xl p-6 backdrop-blur-xl space-y-4 shadow-xl">
+      <Card hoverGlow={false} className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-          
-          {/* Search Input */}
           <div className="relative w-full md:w-96">
             <input
               type="text"
@@ -45,16 +52,15 @@ export default function ReferencesPage({ onSelectPaper }) {
               placeholder="Search title, author, journal..."
               className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/90 border border-purple-500/30 text-white text-xs focus:outline-none focus:border-cyan-400 font-mono transition-all"
             />
-            <span className="absolute left-3.5 top-3.5 text-slate-500 text-sm">🔍</span>
+            <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
           </div>
 
-          {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             {fields.map((f) => (
               <button
                 key={f}
                 onClick={() => setSelectedField(f)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
                   selectedField === f
                     ? 'bg-purple-600 text-white font-bold shadow-lg shadow-purple-500/20'
                     : 'bg-slate-950 text-slate-400 hover:text-white hover:bg-slate-800'
@@ -64,18 +70,17 @@ export default function ReferencesPage({ onSelectPaper }) {
               </button>
             ))}
           </div>
-
         </div>
-      </div>
+      </Card>
 
       {/* Papers Grid */}
       <div className="space-y-4">
         {filteredPapers.length > 0 ? (
           filteredPapers.map((paper) => (
-            <div
+            <Card
               key={paper.id}
-              onClick={() => onSelectPaper(paper)}
-              className="cursor-pointer bg-slate-900/60 border border-white/10 hover:border-purple-400 rounded-3xl p-6 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] hover:bg-slate-900/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 group"
+              onClick={() => setSelectedPaper(paper)}
+              className="cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-6 group"
             >
               <div className="space-y-2 max-w-3xl">
                 <div className="flex items-center gap-2 text-xs font-mono text-purple-400">
@@ -99,13 +104,13 @@ export default function ReferencesPage({ onSelectPaper }) {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectPaper(paper);
+                  setSelectedPaper(paper);
                 }}
-                className="px-5 py-2.5 rounded-full bg-slate-950 border border-purple-500/30 text-purple-300 group-hover:bg-purple-600 group-hover:text-white text-xs font-mono font-bold whitespace-nowrap transition-all shadow-lg shadow-purple-500/10"
+                className="px-5 py-2.5 rounded-full bg-slate-950 border border-purple-500/30 text-purple-300 group-hover:bg-purple-600 group-hover:text-white text-xs font-mono font-bold whitespace-nowrap transition-all shadow-lg shadow-purple-500/10 cursor-pointer"
               >
                 Inspect Abstract & DOI →
               </button>
-            </div>
+            </Card>
           ))
         ) : (
           <div className="text-center py-16 bg-slate-950/60 rounded-3xl border border-white/10 text-slate-400 font-mono text-xs">
@@ -114,6 +119,7 @@ export default function ReferencesPage({ onSelectPaper }) {
         )}
       </div>
 
-    </div>
+      <ResearchModal paper={selectedPaper} onClose={() => setSelectedPaper(null)} />
+    </motion.div>
   );
 }

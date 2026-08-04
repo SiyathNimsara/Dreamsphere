@@ -1,126 +1,35 @@
-import React from 'https://esm.sh/react@18';
-import { RESEARCH_TOPICS, LATEST_ARTICLES } from '../data/dreamData.js';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import HeroSection from '../components/home/HeroSection';
+import StatBar from '../components/home/StatBar';
+import FeaturedTopics from '../components/home/FeaturedTopics';
+import { LATEST_ARTICLES } from '../data/researchData';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
+import { ArrowRight, Sparkles, BookOpen } from 'lucide-react';
 
-export default function HomePage({ setActiveTab, onSelectPaper, onOpenAIInterpreter }) {
+export default function HomePage({ onSelectPaper }) {
+  const navigate = useNavigate();
+
   return (
-    <div className="space-y-24 relative z-10 pt-28 pb-16">
-      
-      {/* HERO SECTION */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8 min-h-[75vh] flex flex-col justify-center items-center">
-        
-        {/* Top Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/80 border border-purple-500/30 backdrop-blur-xl shadow-xl shadow-purple-950/40 text-purple-300 text-xs font-mono tracking-wide animate-pulse">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>NASA & Cognitive Science Research Platform</span>
-        </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-24 relative z-10 pt-28 pb-16"
+    >
+      {/* Hero Section */}
+      <HeroSection />
 
-        {/* Hero Title */}
-        <div className="max-w-4xl space-y-4">
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-white tracking-tight leading-none font-sans">
-            Explore The Universe <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-500 drop-shadow-[0_0_35px_rgba(99,102,241,0.4)]">
-              Inside Your Mind
-            </span>
-          </h1>
+      {/* Statistics Bar */}
+      <StatBar />
 
-          <p className="text-lg sm:text-2xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed">
-            A journey through neuroscience, psychology, culture, and the mysteries of human dreams.
-          </p>
-        </div>
+      {/* Featured Research Topics */}
+      <FeaturedTopics />
 
-        {/* Hero Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <button
-            onClick={() => setActiveTab('science')}
-            className="px-8 py-4 rounded-full font-bold text-sm bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white shadow-2xl shadow-purple-500/30 hover:scale-105 transition-all duration-300 flex items-center gap-2"
-          >
-            <span>🧠</span>
-            <span>Begin Research Journey</span>
-          </button>
-
-          <button
-            onClick={onOpenAIInterpreter}
-            className="px-8 py-4 rounded-full font-bold text-sm bg-slate-900/80 hover:bg-slate-800 text-cyan-300 border border-cyan-400/40 hover:border-cyan-300 shadow-xl shadow-cyan-500/10 hover:scale-105 transition-all duration-300 flex items-center gap-2 backdrop-blur-md"
-          >
-            <span>✨</span>
-            <span>Launch AI Interpreter</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('culture')}
-            className="px-6 py-4 rounded-full font-semibold text-sm bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center gap-2 backdrop-blur-md"
-          >
-            <span>🌍</span>
-            <span>Interactive World Map</span>
-          </button>
-        </div>
-
-        {/* Stat Pill Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl w-full pt-12">
-          {[
-            { label: 'Sleep Cycles Mapped', value: '5 Stages (N1-REM)' },
-            { label: 'Historical Traditions', value: '6 Civilizations' },
-            { label: 'Psychological Archetypes', value: 'Jungian Matrix' },
-            { label: 'AI fMRI Decoding', value: '84% Accuracy' }
-          ].map((stat, i) => (
-            <div key={i} className="bg-slate-950/60 p-4 rounded-2xl border border-white/10 backdrop-blur-md text-left">
-              <span className="text-[10px] font-mono text-purple-400 block uppercase font-semibold">{stat.label}</span>
-              <span className="text-base font-bold text-white font-mono mt-0.5 block">{stat.value}</span>
-            </div>
-          ))}
-        </div>
-
-      </section>
-
-      {/* FEATURED RESEARCH TOPICS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <span className="text-xs font-mono text-cyan-400 uppercase font-semibold block mb-1">Core Modules</span>
-            <h2 className="text-3xl font-extrabold text-white tracking-tight">
-              Featured Scientific Domains
-            </h2>
-          </div>
-          <button
-            onClick={() => setActiveTab('science')}
-            className="text-xs font-mono text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1"
-          >
-            View All Science Modules →
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {RESEARCH_TOPICS.map((topic) => (
-            <div
-              key={topic.id}
-              onClick={() => setActiveTab('science')}
-              className="cursor-pointer bg-slate-900/60 border border-white/10 hover:border-purple-500/40 rounded-3xl p-6 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-slate-900/80 group flex flex-col justify-between"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-[10px] font-mono">
-                    {topic.category}
-                  </span>
-                  <span className="text-2xl">✨</span>
-                </div>
-                <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
-                  {topic.title}
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {topic.summary}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-white/10 mt-6 flex items-center justify-between text-[11px] font-mono text-cyan-400">
-                <span>{topic.metrics.brainwaveFreq.split(' ')[0]}</span>
-                <span className="group-hover:translate-x-1 transition-transform">Explore →</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* LATEST ARTICLES & DISCOVERIES */}
+      {/* Latest Discoveries & Articles */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -130,19 +39,20 @@ export default function HomePage({ setActiveTab, onSelectPaper, onOpenAIInterpre
             </h2>
           </div>
           <button
-            onClick={() => setActiveTab('references')}
-            className="text-xs font-mono text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1"
+            onClick={() => navigate('/references')}
+            className="text-xs font-mono text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 cursor-pointer"
           >
-            Access Full Library →
+            <span>Access Full Library</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {LATEST_ARTICLES.map((article) => (
-            <div
+            <Card
               key={article.id}
-              onClick={() => setActiveTab('references')}
-              className="cursor-pointer bg-slate-900/60 border border-purple-500/20 rounded-3xl overflow-hidden backdrop-blur-xl transition-all duration-300 hover:border-purple-400 hover:scale-[1.02] group"
+              onClick={() => navigate('/references')}
+              className="cursor-pointer overflow-hidden group border-purple-500/20 p-0"
             >
               <div className="relative h-48 overflow-hidden">
                 <img
@@ -179,17 +89,17 @@ export default function HomePage({ setActiveTab, onSelectPaper, onOpenAIInterpre
                   ))}
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* CALL TO ACTION BANNER */}
+      {/* Call to Action Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl bg-gradient-to-r from-indigo-900/90 via-purple-900/90 to-slate-950 border border-purple-400/40 p-8 sm:p-12 overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
-          
           <div className="space-y-4 max-w-2xl text-center md:text-left relative z-10">
-            <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-mono">
+            <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-mono inline-flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
               AI Subconscious Interpreter
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -200,16 +110,16 @@ export default function HomePage({ setActiveTab, onSelectPaper, onOpenAIInterpre
             </p>
           </div>
 
-          <button
-            onClick={onOpenAIInterpreter}
-            className="relative z-10 px-8 py-4 rounded-full font-bold text-sm bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 hover:text-white shadow-2xl shadow-cyan-500/30 hover:scale-105 transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+          <Button
+            onClick={() => navigate('/ai-future')}
+            variant="primary"
+            className="relative z-10 whitespace-nowrap"
           >
-            <span>✨</span>
+            <Sparkles className="w-4 h-4" />
             <span>Launch AI Interpreter Studio</span>
-          </button>
+          </Button>
         </div>
       </section>
-
-    </div>
+    </motion.div>
   );
 }

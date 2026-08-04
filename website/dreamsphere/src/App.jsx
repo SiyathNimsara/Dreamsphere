@@ -1,75 +1,47 @@
-import React, { useState } from 'https://esm.sh/react@18';
-import CosmicCanvas from './components/CosmicCanvas.jsx';
-import Navbar from './components/Navbar.jsx';
-import Footer from './components/Footer.jsx';
-import ResearchModal from './components/ResearchModal.jsx';
+import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 
-import HomePage from './pages/HomePage.jsx';
-import SciencePage from './pages/SciencePage.jsx';
-import PsychologyPage from './pages/PsychologyPage.jsx';
-import CulturePage from './pages/CulturePage.jsx';
-import ExperiencesPage from './pages/ExperiencesPage.jsx';
-import AIFuturePage from './pages/AIFuturePage.jsx';
-import ReferencesPage from './pages/ReferencesPage.jsx';
+import CosmicCanvas from './components/canvas/CosmicCanvas';
+import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer';
+
+import HomePage from './pages/HomePage';
+import SciencePage from './pages/SciencePage';
+import PsychologyPage from './pages/PsychologyPage';
+import CulturePage from './pages/CulturePage';
+import ExperiencesPage from './pages/ExperiencesPage';
+import AIFuturePage from './pages/AIFuturePage';
+import ReferencesPage from './pages/ReferencesPage';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
-  const [selectedPaper, setSelectedPaper] = useState(null);
-
-  const handleOpenAIInterpreter = () => {
-    setActiveTab('ai-future');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const location = useLocation();
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
-      
-      {/* 3D Solar System & Starfield Background Canvas */}
+      {/* 3D Solar System & Starfield Canvas Backdrop */}
       <CosmicCanvas />
 
       {/* Glassmorphic Navbar */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={handleTabChange}
-        onOpenAIInterpreter={handleOpenAIInterpreter}
-      />
+      <Navbar />
 
-      {/* Main Active Page View */}
+      {/* Animated Route Pages */}
       <main className="relative z-10">
-        {activeTab === 'home' && (
-          <HomePage
-            setActiveTab={handleTabChange}
-            onSelectPaper={(paper) => setSelectedPaper(paper)}
-            onOpenAIInterpreter={handleOpenAIInterpreter}
-          />
-        )}
-        {activeTab === 'science' && <SciencePage />}
-        {activeTab === 'psychology' && <PsychologyPage />}
-        {activeTab === 'culture' && <CulturePage />}
-        {activeTab === 'experiences' && <ExperiencesPage />}
-        {activeTab === 'ai-future' && <AIFuturePage />}
-        {activeTab === 'references' && (
-          <ReferencesPage onSelectPaper={(paper) => setSelectedPaper(paper)} />
-        )}
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/science" element={<SciencePage />} />
+            <Route path="/psychology" element={<PsychologyPage />} />
+            <Route path="/culture" element={<CulturePage />} />
+            <Route path="/experiences" element={<ExperiencesPage />} />
+            <Route path="/ai-future" element={<AIFuturePage />} />
+            <Route path="/references" element={<ReferencesPage />} />
+          </Routes>
+        </AnimatePresence>
       </main>
 
-      {/* Research Paper Abstract Modal */}
-      <ResearchModal
-        paper={selectedPaper}
-        onClose={() => setSelectedPaper(null)}
-      />
-
       {/* Footer */}
-      <Footer
-        setActiveTab={handleTabChange}
-        onOpenAIInterpreter={handleOpenAIInterpreter}
-      />
-
+      <Footer />
     </div>
   );
 }

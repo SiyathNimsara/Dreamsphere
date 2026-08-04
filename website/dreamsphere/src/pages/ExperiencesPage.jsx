@@ -1,14 +1,20 @@
-import React, { useState } from 'https://esm.sh/react@18';
-import LucidGuide from '../components/LucidGuide.jsx';
-import { EXPERIENCE_TYPES } from '../data/dreamData.js';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import LucidGuide from '../components/experiences/LucidGuide';
+import { EXPERIENCE_TYPES } from '../data/cultureData';
+import Card from '../components/common/Card';
 
 export default function ExperiencesPage() {
   const [selectedExp, setSelectedExp] = useState(EXPERIENCE_TYPES[0]);
 
   return (
-    <div className="space-y-16 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      {/* Header */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-16 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
           <span>🌌</span>
@@ -22,18 +28,15 @@ export default function ExperiencesPage() {
         </p>
       </div>
 
-      {/* Experience Category Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {EXPERIENCE_TYPES.map((exp) => {
           const isSelected = selectedExp.id === exp.id;
           return (
-            <div
+            <Card
               key={exp.id}
               onClick={() => setSelectedExp(exp)}
-              className={`cursor-pointer rounded-3xl p-6 border transition-all duration-300 backdrop-blur-xl flex flex-col justify-between space-y-4 group ${
-                isSelected
-                  ? 'bg-slate-900/90 border-cyan-400 shadow-xl shadow-cyan-500/20 scale-[1.02]'
-                  : 'bg-slate-950/60 border-white/10 hover:border-white/30 hover:bg-slate-900/60'
+              className={`cursor-pointer flex flex-col justify-between space-y-4 group ${
+                isSelected ? 'border-cyan-400 shadow-xl shadow-cyan-500/20 scale-[1.02]' : ''
               }`}
             >
               <div className="space-y-3">
@@ -47,17 +50,11 @@ export default function ExperiencesPage() {
                   {exp.tagline}
                 </p>
               </div>
-
-              <div className="pt-3 border-t border-white/10 text-xs font-mono text-cyan-400 flex items-center justify-between">
-                <span>View Protocol</span>
-                <span>→</span>
-              </div>
-            </div>
+            </Card>
           );
         })}
       </div>
 
-      {/* Selected Experience Atmospheric Detail Card */}
       <div className="bg-slate-950/80 border border-cyan-500/30 rounded-3xl p-6 sm:p-10 space-y-6 shadow-2xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
           <div>
@@ -71,14 +68,14 @@ export default function ExperiencesPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-sm">
           <div className="lg:col-span-7 space-y-4">
-            <span className="text-xs font-mono text-purple-400 uppercase font-semibold block">Phenomenological Description</span>
+            <span className="text-xs font-mono text-purple-400 uppercase font-semibold block">Description</span>
             <p className="text-slate-200 text-xs sm:text-sm leading-relaxed bg-slate-900/60 p-5 rounded-2xl border border-white/5">
               {selectedExp.description}
             </p>
           </div>
 
           <div className="lg:col-span-5 space-y-4">
-            <span className="text-xs font-mono text-cyan-400 uppercase font-semibold block">Evidence-Based Clinical Protocols</span>
+            <span className="text-xs font-mono text-cyan-400 uppercase font-semibold block">Evidence-Based Protocols</span>
             <div className="space-y-3">
               {selectedExp.techniques.map((tech, idx) => (
                 <div key={idx} className="bg-slate-900/80 p-4 rounded-2xl border border-white/10 space-y-1 text-xs">
@@ -91,9 +88,7 @@ export default function ExperiencesPage() {
         </div>
       </div>
 
-      {/* LUCID DREAM TRAINER HUB */}
       <LucidGuide />
-
-    </div>
+    </motion.div>
   );
 }

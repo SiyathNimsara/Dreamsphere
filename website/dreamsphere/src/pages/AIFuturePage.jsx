@@ -1,12 +1,35 @@
-import React from 'https://esm.sh/react@18';
-import AIDreamInterpreter from '../components/AIDreamInterpreter.jsx';
-import { AI_DREAM_TOPICS } from '../data/dreamData.js';
+import React from 'react';
+import { motion } from 'framer-motion';
+import AIDreamInterpreter from '../components/ai/AIDreamInterpreter';
+import Card from '../components/common/Card';
 
 export default function AIFuturePage() {
+  const topics = [
+    {
+      title: 'AI Dream Interpretation Neural Networks',
+      desc: 'Combining large language models with psychological archetype classifiers to map personal dream journals to scientific, historical, and emotional metrics.',
+      badge: 'LLM & NLP Science'
+    },
+    {
+      title: 'fMRI Neural Image Reconstruction',
+      desc: 'Using generative AI diffusion models paired with high-field brain scanners to decode visual stream activity during sleep into real-time digital video renderings.',
+      badge: 'Gallant Lab & Kyoto BCI'
+    },
+    {
+      title: 'Closed-Loop Lucid Induction Wearables',
+      desc: 'Smart headband neural sensors detecting REM onset and delivering real-time subtle gamma light/binaural cues to awaken metacognition without waking the body.',
+      badge: 'Neurotech Hardware'
+    }
+  ];
+
   return (
-    <div className="space-y-16 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      {/* Header */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-16 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
           <span>🤖</span>
@@ -20,10 +43,8 @@ export default function AIFuturePage() {
         </p>
       </div>
 
-      {/* AI INTERPRETATION STUDIO HUB */}
       <AIDreamInterpreter />
 
-      {/* FUTURE NEUROTECH FRONTIERS GRID */}
       <div className="space-y-6">
         <div className="border-b border-white/10 pb-4">
           <span className="text-xs font-mono text-cyan-400 uppercase font-semibold block mb-1">Emerging Technologies</span>
@@ -31,11 +52,8 @@ export default function AIFuturePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {AI_DREAM_TOPICS.map((topic, idx) => (
-            <div
-              key={idx}
-              className="bg-slate-900/60 border border-cyan-500/20 rounded-3xl p-6 sm:p-8 backdrop-blur-xl space-y-4 hover:border-cyan-400 transition-all flex flex-col justify-between"
-            >
+          {topics.map((topic, idx) => (
+            <Card key={idx} className="space-y-4 flex flex-col justify-between">
               <div className="space-y-3">
                 <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-mono">
                   {topic.badge}
@@ -50,11 +68,10 @@ export default function AIFuturePage() {
                 <span>Horizon: 2026-2030</span>
                 <span>Active R&D ⚡</span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </div>
-
-    </div>
+    </motion.div>
   );
 }

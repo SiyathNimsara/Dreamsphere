@@ -1,13 +1,19 @@
-import React from 'https://esm.sh/react@18';
-import SleepCycleVisualizer from '../components/SleepCycleVisualizer.jsx';
-import BrainHeatmap from '../components/BrainHeatmap.jsx';
-import { RESEARCH_TOPICS } from '../data/dreamData.js';
+import React from 'react';
+import { motion } from 'framer-motion';
+import SleepCycleVisualizer from '../components/science/SleepCycleVisualizer';
+import BrainHeatmap from '../components/science/BrainHeatmap';
+import { RESEARCH_TOPICS } from '../data/researchData';
+import Card from '../components/common/Card';
 
 export default function SciencePage() {
   return (
-    <div className="space-y-16 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      {/* Page Header */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-16 relative z-10 pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-mono">
           <span>🧠</span>
@@ -21,13 +27,9 @@ export default function SciencePage() {
         </p>
       </div>
 
-      {/* Sleep Architecture & Live EEG Simulator */}
       <SleepCycleVisualizer />
-
-      {/* Brain Topography & Neural Regions */}
       <BrainHeatmap />
 
-      {/* Scientific Research Cards */}
       <div className="space-y-6">
         <div className="border-b border-white/10 pb-4">
           <span className="text-xs font-mono text-cyan-400 uppercase font-semibold block mb-1">Empirical Foundations</span>
@@ -36,10 +38,7 @@ export default function SciencePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {RESEARCH_TOPICS.map((item) => (
-            <div
-              key={item.id}
-              className="bg-slate-900/60 border border-purple-500/20 rounded-3xl p-6 sm:p-8 backdrop-blur-xl space-y-4 hover:border-purple-400 transition-all"
-            >
+            <Card key={item.id} className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-mono">
                   {item.category}
@@ -56,11 +55,10 @@ export default function SciencePage() {
                 <span>Neurotransmitter: <strong className="text-purple-300">{item.metrics.primaryNeurotransmitter}</strong></span>
                 <span>Active Networks: <strong className="text-cyan-300">{item.metrics.activeRegions} Core Nodes</strong></span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </div>
-
-    </div>
+    </motion.div>
   );
 }
