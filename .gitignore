@@ -8,4 +8,12 @@ node_modules/
 dist/
 
 # Environment files
-.env
+.envterraform/.terraform/
+terraform/*.tfstate*
+terraform/.terraform.lock.hcl
+
+
+# Terraform Ignores
+terraform/.terraform/
+terraform/*.tfstate*
+terraform/.terraform.lock.hcl
