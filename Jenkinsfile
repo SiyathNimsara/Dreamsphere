@@ -4,14 +4,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // This tells Jenkins to download the latest code from your GitHub
+                // Jenkins to download the latest code from GitHub
                 git branch: 'main', url: 'https://github.com/SiyathNimsara/Dreamsphere.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                // Jenkins runs the build command just like you did manually
+                // Jenkins runs the build command 
                 sh 'docker build -t dreamsphere-website -f docker/Dockerfile .'
             }
         }
